@@ -150,7 +150,16 @@ const fetchAndParse = async (c: any, postId: string) => {
 
   try {
     console.log(`Fetching: ${targetUrl}`);
-    const wpResponse = await fetch(targetUrl);
+
+    // Vercel Hobby plan has 10s timeout, so we set 8s for the fetch
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+    const wpResponse = await fetch(targetUrl, {
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
 
     if (!wpResponse.ok) {
       if (wpResponse.status === 404) {
@@ -176,6 +185,12 @@ const fetchAndParse = async (c: any, postId: string) => {
     });
   } catch (error) {
     console.error(error);
+
+    // Handle fetch timeout
+    if (error instanceof Error && error.name === "AbortError") {
+      return c.json({ error: "External API timeout - please try again" }, 504);
+    }
+
     return c.json({ error: "Internal Server Error" }, 500);
   }
 };
