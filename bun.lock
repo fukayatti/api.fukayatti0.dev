@@ -5,7 +5,7 @@
     "": {
       "name": "ibaraki-ct-api",
       "dependencies": {
-        "cheerio": "^1.0.0-rc.12",
+        "cheerio": "^1.0.0",
         "hono": "^4.0.0",
       },
       "devDependencies": {
