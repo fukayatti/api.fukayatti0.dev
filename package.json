@@ -2,13 +2,18 @@
   "name": "ibaraki-ct-api",
   "version": "1.0.0",
   "scripts": {
-    "dev": "bun run --watch api/index.ts"
+    "dev": "wrangler dev",
+    "dev:bun": "bun run --watch api/index.ts",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
   },
   "dependencies": {
     "hono": "^4.0.0",
     "node-html-parser": "^7.0.2"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240112.0",
+    "wrangler": "^3.0.0",
     "@types/bun": "latest"
   },
   "module": "index.ts",

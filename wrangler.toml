@@ -1,0 +1,10 @@
+name = "ibaraki-ct-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[observability]
+enabled = true
+
+routes = [
+  { pattern = "api.fukayatti0.dev/*", zone_name = "fukayatti0.dev" }
+]
