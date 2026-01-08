@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { cors } from "hono/cors";
-import { load } from "cheerio";
+import { parse } from "node-html-parser";
 
 // ==========================================
-// Parser (cheerioでHTML解析)
+// Parser (node-html-parserでHTML解析)
 // ==========================================
 
 // 記号と意味のマッピング
@@ -54,16 +54,17 @@ const toHalfWidth = (str: string): string => {
  * HTML文字列から休講情報を抽出する
  */
 const parseCancellationHtml = (htmlString: string): CancellationItem[] => {
-  const $ = load(htmlString);
+  const root = parse(htmlString);
   const results: CancellationItem[] = [];
   let currentDate = "";
 
-  $("p").each((_, element) => {
-    const p = $(element);
-    const rawText = p.text().trim();
+  const paragraphs = root.querySelectorAll("p");
+
+  for (const p of paragraphs) {
+    const rawText = p.textContent.trim();
     const normalizedText = toHalfWidth(rawText);
 
-    const hasMark = p.find("mark").length > 0;
+    const hasMark = p.querySelector("mark") !== null;
     const dateMatch = normalizedText.match(/^(\d{1,2}\/\d{1,2}(?:\(.\))?)/);
     const isLinkOrDescription =
       normalizedText.includes("日程") || normalizedText.includes("について");
@@ -75,7 +76,7 @@ const parseCancellationHtml = (htmlString: string): CancellationItem[] => {
       } else {
         currentDate = normalizedText.replace(/\s/g, "");
       }
-      return;
+      continue;
     }
 
     const symbolMatch = rawText.match(/^([◉◎◇☆])/);
@@ -129,7 +130,7 @@ const parseCancellationHtml = (htmlString: string): CancellationItem[] => {
 
       results.push(item);
     }
-  });
+  }
 
   return results;
 };
