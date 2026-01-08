@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { cors } from "hono/cors";
-import { parseCancellationHtml } from "../utils/parser";
+import { parseCancellationHtml } from "./parser";
 
 // ベースパスを /api に設定
 const app = new Hono().basePath("/api");
@@ -28,7 +28,7 @@ const fetchAndParse = async (c: any, postId: string) => {
       }
       return c.json(
         { error: `WordPress API Error: ${wpResponse.status}` },
-        502,
+        502
       );
     }
 
